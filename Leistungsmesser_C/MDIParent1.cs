@@ -26,7 +26,9 @@ namespace Leistungsmesser_C
 
         List<PowerMeter> powermeter = new List<PowerMeter>();
 
-        static String Banner_Window_Text = "Power Meter v1.4 - BETA";
+        public static String SoftwareVersion = "v1.5";
+
+        static String Banner_Window_Text = "Power Meter " + SoftwareVersion;
 
         private bool[] ina_activ = new bool[5];
 
@@ -177,7 +179,7 @@ namespace Leistungsmesser_C
         {
             this.Text = Banner_Window_Text;
             debug_form = new Debug_Form();
-            debug_form.Show();
+            //debug_form.Show(); //enable for debug output
 
             gui_state = (int)gui_states.UNREADY;
         }
@@ -721,6 +723,7 @@ namespace Leistungsmesser_C
 
         private void timer2_Tick(object sender, EventArgs e)
         {
+            
             _deviceList = HidDevices.Enumerate(0x03EB, 0x2402).ToArray();
             //_deviceList = HidDevices.Enumerate().ToArray();
 
@@ -764,8 +767,6 @@ namespace Leistungsmesser_C
 
                     if (device_in_list == false)
                     {
-
-
                         PowerMeter temp = new PowerMeter(this, new_client, DeviceAttachedHandler, DeviceRemovedHandler);
 
                         powermeter.Add(temp);
@@ -822,6 +823,10 @@ namespace Leistungsmesser_C
                 toolStripButtonSetTriggerS.Text = "Set Trigger Source:";
             }
         }
-      
+
+        private void powerChartToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            powertoolStripButton_Click(null, null);
+        }
     }
 }

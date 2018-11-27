@@ -98,20 +98,28 @@ namespace Leistungsmesser_C
 
         private void AboutBox1_Load(object sender, EventArgs e)
         {
-            textBoxDescription.Text = "Valid for my (Sebastian Förster) own designed ATXMega32A4U Software and computer software \"Power Meter\"\r\n\r\n" +
-                                        "1. Copying and publishing for personal use is explicitely allowed,\r\n" +
-                                        "   in case my copyright is kept und no parts of the software have been modified.\r\n" +
-                                        "2. The lucrative selling of construction kits/ finishes modules of my software is forbidden.\r\n" +
-                                        "3. It`s strictly not allowed to use my software in a commercial way without my agreement\r\n" +
-                                        "   Apart from the arrangement, demo and exhibited vehicles are belonging to car hifi traders.\r\n" +
-                                        "I'm not liable for any damages caused by my software or my construction kits/ finishes modules.\r\n\r\n" +
-                                        "Gültig für die von mir (Sebastian Förster) erstellte ATXMega32A4U Controller Software und die PC Software \"Power Meter\"\r\n\r\n" +
-                                        "1. Das Kopieren und Verbreiten für den Privatgebrauch ist ausdrücklich erlaubt,\r\n" +
-                                        "   sofern mein Copyright gewahrt wird und keine Softwarebestandteile modifiziert wurden.\r\n" +
-                                        "2. Das gewinnbringende Verkaufen von Bausätzen/Fertigmodulen mit der von mir erstellten Software ist untersagt.\r\n" +
-                                        "3. Ohne meine Zustimmung ist es ausdrücklich verboten die genannte Software kommerziell einzusetzen.\r\n" +
-                                        "   Ausgenommen von dieser Regelung sind Demo und Vorführ-Fahrzeuge von Car Hifi Händlern.\r\n" + 
-                                        "Ich hafte nicht für Schäden die durch meine Software oder durch meine Bausätzen/Fertigmodule entstehen.\r\n";
+            labelVersion.Text = "Software version: " + MDIParent1.SoftwareVersion;
+
+            textBoxDescription.Text = "Copyright (c) 2008-2018 Sebastian Förster\r\n\r\n" +
+
+                                        "Permission is hereby granted, free of charge, to any person obtaining\r\n" +
+                                        "a copy of this software and associated documentation files(the\r\n" +
+                                        "\"Software\"), to deal in the Software without restriction, including\r\n" +
+                                        "without limitation the rights to use, copy, modify, merge, publish,\r\n" +
+                                        "distribute, sublicense, and/ or sell copies of the Software, and to\r\n" +
+                                        "permit persons to whom the Software is furnished to do so, subject to\r\n" +
+                                        "the following conditions:\r\n\r\n" +
+
+                                        "            The above copyright notice and this permission notice shall be\r\n" +
+                                        "included in all copies or substantial portions of the Software.\r\n\r\n" +
+
+                                        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,\r\n" +
+                                        "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\r\n" +
+                                        "MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND\r\n" +
+                                        "NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE\r\n" +
+                                        "LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION\r\n" +
+                                        "OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION\r\n" +
+                                        "WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\r\n";
 
         }
 

@@ -226,6 +226,7 @@
             this.powerChartToolStripMenuItem.Name = "powerChartToolStripMenuItem";
             this.powerChartToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.powerChartToolStripMenuItem.Text = "Power Chart";
+            this.powerChartToolStripMenuItem.Click += new System.EventHandler(this.powerChartToolStripMenuItem_Click);
             // 
             // viewMenu
             // 

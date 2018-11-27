@@ -27,7 +27,9 @@ namespace Leistungsmesser_C
         private MDIParent1 mdiparent;
 
         private HidDevice _device;
+        private BackgroundWorker _read_bw = new BackgroundWorker();
         public delegate void ReadHandlerDelegate(HidReport report, int pakete);
+        private HidFastReadDevice readDevice;
 
         private Byte[] _ser = new Byte[4];
         public Byte[] version = new Byte[2];
@@ -104,61 +106,54 @@ namespace Leistungsmesser_C
 
             mdiparent.debug_form.Recived.Text += "Try to connect" + "\r\n";
 
-            _device.OpenDevice();
+            HidFastReadEnumerator enumerator = new HidFastReadEnumerator();
+            readDevice = (HidFastReadDevice)enumerator.GetDevice(dev.DevicePath);
 
-            _device.Inserted += DeviceAttachedHandler;
-            _device.Removed += DeviceRemovedHandler;
+            readDevice.OpenDevice(DeviceMode.NonOverlapped, DeviceMode.Overlapped, (ShareMode.ShareRead | ShareMode.ShareWrite));
 
-            _device.MonitorDeviceEvents = true;
+            readDevice.MonitorDeviceEvents = true;
 
-            _device.ReadReport(OnReport);
+            readDevice.Inserted += DeviceAttachedHandlerReader;
+            readDevice.Removed += DeviceRemovedHandlerReader;
+
+            _read_bw.WorkerReportsProgress = true;
+            _read_bw.WorkerSupportsCancellation = true;
+
+            _read_bw.DoWork += new DoWorkEventHandler(backgroundWorker_DoWork);
+            _read_bw.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker_ProgressChanged);
 
         }
 
-        int paketzaehler2 = 0;
-
-        private void OnReport(HidReport report)
+        private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            BackgroundWorker worker = sender as BackgroundWorker;
 
-            _device.ReadReport(OnReport);
-
-           //var reportAs = _device.ReadReportAsync();            
-
-            if (!_device.IsConnected) { return; }
-
-            paketzaehler2++;
-
-            try
+            while(true)
             {
-                mdiparent.BeginInvoke(new ReadHandlerDelegate(ReadHandler), new object[] { report, paketzaehler });
+                if (worker.CancellationPending == true)
+                {
+                    e.Cancel = true;
+                    break;
+                }
+                else
+                {
+                    if(readDevice != null)
+                    {
+                        HidDeviceData data = readDevice.FastRead(1000); //read with 1 s timeout in a endless loop
+                        if(data.Status == HidDeviceData.ReadStatus.Success && data.Data.Length > 0)
+                        {
+                            worker.ReportProgress(100, data);
+                        }
+                    }
+                }
             }
-            catch { }
-
-            /*if (reportAs != null)
-            {
-                mdiparent.BeginInvoke(new ReadHandlerDelegate(ReadHandler), new object[] { reportAs, paketzaehler });
-            }*/
-
-            
         }
 
-        int paketzaehler = 0;
-
-        private void ReadHandler(HidReport report, int pakete)
+        // This event handler updates the progress.
+        private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-
-            
-            //_deviceList[Devices.SelectedIndex].ReadReport(ReadProcess);
-            //mdiparent.debug_form.Recived.Text += "recv msg:" + "\r\n";
-            //mdiparent.debug_form.Recived.Text += System.Text.Encoding.Default.GetString(report.Data);
-            //mdiparent.debug_form.Recived.Text += "\r\n";
-
-            
-
-            parse_tpm2(report.Data, report.Data.Length);
-
-            //MessageBox.Show("Write result: " + System.Text.Encoding.Default.GetString(report.Data));
-            //debug_form.Recived.Text += report.Data.Select(d => d.ToString("X2")) + "\r\n";
+            HidDeviceData data = (HidDeviceData)e.UserState;
+            parse_tpm2(data.Data, data.Data.Length);
         }
 
         public void update_axis()
@@ -172,7 +167,18 @@ namespace Leistungsmesser_C
 
         public void disconnect()
         {
-            _device.CloseDevice();
+            try
+            {
+                _read_bw.CancelAsync();
+            }
+            finally { }
+
+            try
+            {
+                readDevice.CloseDevice();
+            }
+            finally { }
+
             if (IsFormOpen())
             {
                 VC_Window.Close();
@@ -193,12 +199,12 @@ namespace Leistungsmesser_C
         }
 
         //use delegate in WinForm
-        private void DeviceAttachedHandler()
+        private void DeviceAttachedHandlerReader()
         {
 
             if (mdiparent.InvokeRequired)
             {
-                mdiparent.BeginInvoke(new Action(DeviceAttachedHandler));
+                mdiparent.BeginInvoke(new Action(DeviceAttachedHandlerReader));
                 return;
             }
             else
@@ -207,14 +213,19 @@ namespace Leistungsmesser_C
                 if (_actionAttached != null)
                     _actionAttached();
             }
+            try
+            {
+                _read_bw.RunWorkerAsync();
+            }
+            finally { }
         }
 
         //use delegate in WinForm
-        private void DeviceRemovedHandler()
+        private void DeviceRemovedHandlerReader()
         {
             if (mdiparent.InvokeRequired)
             {
-                mdiparent.BeginInvoke(new Action(DeviceRemovedHandler));
+                mdiparent.BeginInvoke(new Action(DeviceRemovedHandlerReader));
                 return;
             }
             else
@@ -536,6 +547,10 @@ namespace Leistungsmesser_C
                     P_Window.MdiParent = (MDIParent1)mdiparent;
                     P_Window.Show();
                 }
+                else
+                {
+                    P_Window.BringToFront();
+                }
             }
             else
             {
@@ -648,6 +663,8 @@ namespace Leistungsmesser_C
                 }
             }
         }
+
+        int paketzaehler = 0;
 
         private void recv_new_data(Byte[] buffer,int len)
         {

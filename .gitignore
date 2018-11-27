@@ -1,7 +1,9 @@
 Backup/
 16x16-free-application-icons
 .nuget
-
+*vshost*
+PowerMeter.exe.config
+app.config
 
 
 ## Ignore Visual Studio temporary files, build results, and
@@ -22,14 +24,14 @@ Backup/
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
-[Rr]elease/
+#[Rr]elease/
 [Rr]eleases/
 x64/
 x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
+#[Bb]in/
 [Oo]bj/
 [Ll]og/
 
