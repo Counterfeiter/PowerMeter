@@ -44,14 +44,17 @@ namespace Leistungsmesser_C
             zg1.GraphPane.YAxis.Scale.Max = 0;
             zg1.GraphPane.YAxis.Scale.Min = 0;
 
-            for (int i = 0; i < counter; i++)
+            int i = 0;
+            foreach(UI ui in ina.UI_List)
             {
-                temp = ina.SaveData_U[i] * ina.SaveData_I[i];
+                temp = ui.I * ui.U;
 
                 if (zg1.GraphPane.YAxis.Scale.Max < (temp * 1.15)) zg1.GraphPane.YAxis.Scale.Max = (temp * 1.15);
                 if (zg1.GraphPane.YAxis.Scale.Min > (temp * 1.15)) zg1.GraphPane.YAxis.Scale.Min = (temp * 1.15);
 
                 ppl_p.Add(i, Math.Round(temp, rounder));
+
+                i++;
             }
 
             //myCurve2 = zg1.GraphPane.AddCurve("", ppl_i, Color.Red, SymbolType.None);

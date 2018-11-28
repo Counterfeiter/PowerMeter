@@ -26,11 +26,9 @@ namespace Leistungsmesser_C
 
         List<PowerMeter> powermeter = new List<PowerMeter>();
 
-        public static String SoftwareVersion = "v1.5";
+        public static String SoftwareVersion = "v1.6";
 
         static String Banner_Window_Text = "Power Meter " + SoftwareVersion;
-
-        private bool[] ina_activ = new bool[5];
 
         public enum gui_states : int { UNREADY,READY,PLAY,RECORD,STOP,ACTIV_DATA};
         private int gui_state = (int) gui_states.UNREADY;
@@ -66,58 +64,66 @@ namespace Leistungsmesser_C
 
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bool ina_akt1 = false;
 
+            int min_data = Int32.MaxValue;
 
-            if (Application.OpenForms["INA1"] != null)
+            foreach (var pw in powermeter)
             {
-                ina_akt1 = true;
+                if (pw.VC_Window.UI_List.Count < min_data)
+                {
+                    min_data = pw.VC_Window.UI_List.Count;
+                }
+            }
+
+            if(min_data == 0 || min_data == Int32.MaxValue)
+            {
+                return;
             }
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            saveFileDialog.Title = "Save and use output in Excel...";
-            saveFileDialog.Filter = "CSV File (*.csv)|*.csv";
+            saveFileDialog.Title = "Save to CSV file...";
+            saveFileDialog.Filter = "csv file (*.csv)|*.csv";
             saveFileDialog.DefaultExt = "csv";
             if (saveFileDialog.ShowDialog(this) == DialogResult.OK && saveFileDialog.FileName != "")
             {
-                System.IO.StreamWriter save_file = new System.IO.StreamWriter(saveFileDialog.FileName);
 
- 
-
-                save_file.Write("t/ms;");
-
-                if (ina_akt1)
+                using (var w = new System.IO.StreamWriter(saveFileDialog.FileName))
                 {
-                    save_file.Write("Probe 1 U/V;");
-                    save_file.Write("Probe 1 I/A;");
-                }
 
-                save_file.Write("\r\n");
+                    string delimiter = ";";
 
-                int i;
-                
-                //string FileName = saveFileDialog.FileName;
-                /*for (i = 0; i < record_time; i++)
-                {
-                    save_file.Write((i + 1));
-                    save_file.Write(";");
-                    if (ina_akt1 == true)
+                    //generate headline
+                    string line = "\"t/ms\"" + delimiter;
+
+                    foreach (var pw in powermeter)
                     {
-                        save_file.Write(ina_1.SaveData_U[i]);
-                        save_file.Write(";");
-                        save_file.Write(ina_1.SaveData_I[i]);
-                        save_file.Write(";");
+                        line += "\"" + pw.nick_name.Replace("\"", "\"\"") + " U/V" + "\"";
+                        line += delimiter;
+                        line += "\"" + pw.nick_name.Replace("\"", "\"\"") + " I/A" + "\"";
+                        line += delimiter;
                     }
+                    w.WriteLine(line);
 
-                    save_file.Write("\r\n");
-                }*/
+                    //generate data points
+                    for (int i = 0; i < min_data; i++)
+                    {
+                        line = i.ToString();
 
-                save_file.Close();
+                        line += delimiter;
+
+                        foreach (var pw in powermeter)
+                        {
+                            line += pw.VC_Window.UI_List[i].U.ToString("F");
+                            line += delimiter;
+                            line += pw.VC_Window.UI_List[i].I.ToString("F");
+                            line += delimiter;
+                        }
+
+                        w.WriteLine(line);
+                    }
+                }
             }
-
-            saveAsToolStripMenuItem.Enabled = false;
-            saveToolStripButton.Enabled = false;
         }
 
         private void ExitToolsStripMenuItem_Click(object sender, EventArgs e)
@@ -229,6 +235,9 @@ namespace Leistungsmesser_C
 
                         saveAsImageToolStripMenuItem.Enabled = false;
                         saveasimagetoolStripButton6.Enabled = false;
+
+                        saveAsToolStripMenuItem.Enabled = false;
+                        saveToolStripButton.Enabled = false;
                     }
                     break;
                 case (int)gui_states.READY:
@@ -251,7 +260,7 @@ namespace Leistungsmesser_C
 
                             gui_state = (int)gui_states.READY;
 
-                            toolStripStatusLabel.Text = "At minimum one device is ready";
+                            toolStripStatusLabel.Text = "at minimum one device is ready";
                             PlayStripButton.Enabled = true;
                             StopStripButton.Enabled = true;
                             RecordStripButton.Enabled = true;
@@ -269,6 +278,9 @@ namespace Leistungsmesser_C
 
                             saveAsImageToolStripMenuItem.Enabled = false;
                             saveasimagetoolStripButton6.Enabled = false;
+
+                            saveAsToolStripMenuItem.Enabled = false;
+                            saveToolStripButton.Enabled = false;
                         }
                     }
                     break;
@@ -287,7 +299,7 @@ namespace Leistungsmesser_C
 
                         gui_state = (int)gui_states.STOP;
 
-                        toolStripStatusLabel.Text = "All devices stoped";
+                        toolStripStatusLabel.Text = "all devices are stopped";
 
                         timer1.Enabled = false;
 
@@ -307,6 +319,8 @@ namespace Leistungsmesser_C
                             powerChartToolStripMenuItem.Enabled = true;
                             rMSCalculatorToolStripMenuItem.Enabled = true;
                             powertoolStripButton.Enabled = true;
+                            saveAsToolStripMenuItem.Enabled = true;
+                            saveToolStripButton.Enabled = true;
                         }
                         else
                         {
@@ -332,7 +346,7 @@ namespace Leistungsmesser_C
 
                         gui_state = (int)gui_states.PLAY;
 
-                        toolStripStatusLabel.Text = "Start displaying data...";
+                        toolStripStatusLabel.Text = "start displaying data...";
 
                         timer1.Enabled = true;
 
@@ -356,6 +370,9 @@ namespace Leistungsmesser_C
 
                         saveAsImageToolStripMenuItem.Enabled = false;
                         saveasimagetoolStripButton6.Enabled = false;
+
+                        saveAsToolStripMenuItem.Enabled = false;
+                        saveToolStripButton.Enabled = false;
                     }
 
                     break;
@@ -366,13 +383,13 @@ namespace Leistungsmesser_C
                         long record_time;
                         double threshold_value;
 
-                        if (long.TryParse(toolStripRecordTime.Text, out record_time) && record_time != 0 && record_time <= 100 && double.TryParse(toolStriptrigger_threshold.Text, out threshold_value))
+                        if (long.TryParse(toolStripRecordTime.Text, out record_time) && record_time != 0 && double.TryParse(toolStriptrigger_threshold.Text, out threshold_value))
                         {
                             
                         }
                         else
                         {
-                            MessageBox.Show("Please insert a record time beween 1 and 100 seconds and a valid threshhold!","Error",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("Please insert a valid record time and threshold!", "Error",MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
 
@@ -402,7 +419,7 @@ namespace Leistungsmesser_C
 
                         gui_state = (int)gui_states.RECORD;
 
-                        toolStripStatusLabel.Text = "Start recording...";
+                        toolStripStatusLabel.Text = "start recording...";
 
                         foreach (PowerMeter client in powermeter)
                         {
@@ -439,6 +456,9 @@ namespace Leistungsmesser_C
 
                         saveAsImageToolStripMenuItem.Enabled = false;
                         saveasimagetoolStripButton6.Enabled = false;
+
+                        saveAsToolStripMenuItem.Enabled = false;
+                        saveToolStripButton.Enabled = false;
                     }
 
                     break;

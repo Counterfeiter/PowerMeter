@@ -28,7 +28,6 @@ namespace Leistungsmesser_C
 
         private HidDevice _device;
         private BackgroundWorker _read_bw = new BackgroundWorker();
-        public delegate void ReadHandlerDelegate(HidReport report, int pakete);
         private HidFastReadDevice readDevice;
 
         private Byte[] _ser = new Byte[4];
@@ -43,7 +42,7 @@ namespace Leistungsmesser_C
         public float scale_CH;
 
         //use with scale values to calc the possible resolution and set the rounding
-        private int current_rounder = 1;
+        public int current_rounder = 1;
 
         public bool hall_active = false;
 
@@ -489,35 +488,35 @@ namespace Leistungsmesser_C
                 scale_current = scale_C;
             }
 
-            if (scale_current * 4000 > 0.0001)
+            if (scale_current * 4000 < 0.0001)
             {
                 current_rounder = 7;
             }
-            else if (scale_current * 4000 > 0.001)
+            else if (scale_current * 4000 < 0.001)
             {
                 current_rounder = 6;
             }
-            else if (scale_current * 4000 > 0.01)
+            else if (scale_current * 4000 < 0.01)
             {
                 current_rounder = 5;
             }
-            else if (scale_current * 4000 > 0.1)
+            else if (scale_current * 4000 < 0.1)
             {
                 current_rounder = 4;
             }
-            else if (scale_current * 4000 > 1.0)
+            else if (scale_current * 4000 < 1.0)
             {
                 current_rounder = 3;
             }
-            else if (scale_current * 4000 > 10.0)
+            else if (scale_current * 4000 < 10.0)
             {
                 current_rounder = 2;
             }
-            else if (scale_current * 4000 > 100.0)
+            else if (scale_current * 4000 < 100.0)
             {
                 current_rounder = 1;
             }
-            else if (scale_current * 4000 > 1000.0)
+            else
             {
                 current_rounder = 0;
             }
@@ -654,13 +653,21 @@ namespace Leistungsmesser_C
                 if (threshold_v < 0) threshold_value = threshold_v * (-1.0);
                 else threshold_value = threshold_v;
 
-                if (IsFormOpen())
+                if (!IsFormOpen())
                 {
-                    VC_Window.roll_spannung.Clear();
-                    VC_Window.roll_strom.Clear();
-
-                    VC_Window.Display_NewRollList();
+                    VC_Window = new INA1((MDIParent1)mdiparent, this);
+                    VC_Window.MdiParent = (MDIParent1)mdiparent;
+                    VC_Window.Show();
                 }
+
+                //delete old data
+
+                VC_Window.roll_spannung.Clear();
+                VC_Window.roll_strom.Clear();
+
+                VC_Window.Display_NewRollList();
+
+                VC_Window.UI_List.Clear();
             }
         }
 
@@ -712,9 +719,12 @@ namespace Leistungsmesser_C
 
                 if (trigger_active == true)
                 {
-                    if(IsFormOpen()) {
-                        VC_Window.SaveData_U[count_x - trigger_sample] = Math.Round(voltage * scale_V, 2);
-                        VC_Window.SaveData_I[count_x - trigger_sample] = Math.Round(current * scale_current, current_rounder);
+                    if(IsFormOpen())
+                    {
+                        UI ui;
+                        ui.U = Math.Round(voltage * scale_V, 2);
+                        ui.I = Math.Round(current * scale_current, current_rounder);
+                        VC_Window.UI_List.Add(ui);
                     }
                 }
 

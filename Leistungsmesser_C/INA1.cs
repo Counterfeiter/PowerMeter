@@ -10,6 +10,12 @@ using ZedGraph;
 
 namespace Leistungsmesser_C
 {
+    public struct UI
+    {
+        public double U;
+        public double I;
+    }
+
     public partial class INA1 : Form
     {
         private MDIParent1 MDIParent;
@@ -36,8 +42,7 @@ namespace Leistungsmesser_C
         private PointPairList ppl_u = new PointPairList();
         private PointPairList ppl_i = new PointPairList();
 
-        public double[] SaveData_U = new double[100000];
-        public double[] SaveData_I = new double[100000];
+        public List<UI> UI_List = new List<UI>();
 
         private LineItem myCurve;
         private LineItem myCurve2;
@@ -66,14 +71,17 @@ namespace Leistungsmesser_C
             zg1.GraphPane.Y2Axis.Scale.Max = 0.0;
             zg1.GraphPane.Y2Axis.Scale.Min = 0;
 
-            for (int i = 0; i < counter; i++)
+            int i = 0;
+            foreach (UI ui in UI_List)
             {
-                if (zg1.GraphPane.YAxis.Scale.Max < (SaveData_U[i] * 1.2)) zg1.GraphPane.YAxis.Scale.Max = (SaveData_U[i] * 1.2);
-                if (zg1.GraphPane.Y2Axis.Scale.Max < (SaveData_I[i] * 1.15)) zg1.GraphPane.Y2Axis.Scale.Max = (SaveData_I[i] * 1.15);
-                if (zg1.GraphPane.Y2Axis.Scale.Min > (SaveData_I[i] * 1.15)) zg1.GraphPane.Y2Axis.Scale.Min = (SaveData_I[i] * 1.15);
+                if (zg1.GraphPane.YAxis.Scale.Max < (ui.U * 1.2)) zg1.GraphPane.YAxis.Scale.Max = (ui.U * 1.2);
+                if (zg1.GraphPane.Y2Axis.Scale.Max < (ui.I * 1.15)) zg1.GraphPane.Y2Axis.Scale.Max = (ui.I * 1.15);
+                if (zg1.GraphPane.Y2Axis.Scale.Min > (ui.I * 1.15)) zg1.GraphPane.Y2Axis.Scale.Min = (ui.I * 1.15);
 
-                ppl_u.Add(i , SaveData_U[i]);
-                ppl_i.Add(i , SaveData_I[i]);
+                ppl_u.Add(i , ui.U);
+                ppl_i.Add(i , ui.I);
+
+                i++;
             }
 
             myCurve = zg1.GraphPane.AddCurve("", ppl_u, Color.Green, SymbolType.None);
@@ -214,15 +222,13 @@ namespace Leistungsmesser_C
             //zg1.IsScrollY2 = True
 
             zg1.IsShowPointValues = true;
-
-            text = new TextObj("Mittelwerte von xxx bis xxx", 0.05, 0.95, CoordType.PaneFraction, AlignH.Left, AlignV.Bottom);
-
+            
+            //add text here for later use
+            text = new TextObj("xxx", 0.05, 0.95, CoordType.PaneFraction, AlignH.Left, AlignV.Bottom);
             zg1.GraphPane.GraphObjList.Add(text);
-
             text.FontSpec.Fill.IsVisible = false;
             text.FontSpec.Size = 10;
             text.FontSpec.IsBold = true;
-
             text.IsVisible = false;
 
 
@@ -298,13 +304,13 @@ namespace Leistungsmesser_C
 
                     for (int i = Convert.ToInt32(rms_first_pt.X); i < Convert.ToInt32(rms_end_pt.X + 1); i++)
                     {
-                        Strom += SaveData_I[i];
-                        Spannung += SaveData_U[i];
-                        Leistung += SaveData_I[i] * SaveData_U[i];
+                        Strom += UI_List[i].I;
+                        Spannung += UI_List[i].U;
+                        Leistung += UI_List[i].I * UI_List[i].U;
 
-                        Strom_rms += Math.Pow(SaveData_I[i], 2);
-                        Spannung_rms += Math.Pow(SaveData_U[i], 2);
-                        Leistung_rms += Math.Pow((SaveData_I[i] * SaveData_U[i]), 2);
+                        Strom_rms += Math.Pow(UI_List[i].I, 2);
+                        Spannung_rms += Math.Pow(UI_List[i].U, 2);
+                        Leistung_rms += Math.Pow((UI_List[i].I * UI_List[i].U), 2);
 
                     }
 
@@ -325,8 +331,8 @@ namespace Leistungsmesser_C
 
                     text.Text = "Average values from " + rms_first_pt.X.ToString() + " ms to " + rms_end_pt.X.ToString() + " ms\r\n" +
                                                     Convert.ToString(Math.Round(Spannung, 2)) + " V avg    " + Convert.ToString(Math.Round(Spannung_rms, 2)) + " V RMS\r\n" +
-                                                    Convert.ToString(Math.Round(Strom, 1)) + " A avg    " + Convert.ToString(Math.Round(Strom_rms, 1)) + " A RMS\r\n" +
-                                                    Convert.ToString(Math.Round(Leistung, 0)) + " W avg    " + Convert.ToString(Math.Round(Leistung_rms, 0)) + " W RMS\r\n";
+                                                    Convert.ToString(Math.Round(Strom, pm.current_rounder)) + " A avg    " + Convert.ToString(Math.Round(Strom_rms, pm.current_rounder)) + " A RMS\r\n" +
+                                                    Convert.ToString(Math.Round(Leistung, pm.current_rounder)) + " W avg    " + Convert.ToString(Math.Round(Leistung_rms, pm.current_rounder)) + " W RMS\r\n";
 
                     rms_drag = 6;
 
