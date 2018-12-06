@@ -26,7 +26,7 @@ namespace Leistungsmesser_C
 
         List<PowerMeter> powermeter = new List<PowerMeter>();
 
-        public static String SoftwareVersion = "v1.6";
+        public static String SoftwareVersion = "v1.6.1";
 
         static String Banner_Window_Text = "Power Meter " + SoftwareVersion;
 

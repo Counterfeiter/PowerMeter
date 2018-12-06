@@ -488,31 +488,27 @@ namespace Leistungsmesser_C
                 scale_current = scale_C;
             }
 
-            if (scale_current * 4000 < 0.0001)
-            {
-                current_rounder = 7;
-            }
-            else if (scale_current * 4000 < 0.001)
+            if (scale_current <= 0.00001)
             {
                 current_rounder = 6;
             }
-            else if (scale_current * 4000 < 0.01)
+            else if (scale_current < 0.0001)
             {
                 current_rounder = 5;
             }
-            else if (scale_current * 4000 < 0.1)
+            else if (scale_current < 0.001)
             {
                 current_rounder = 4;
             }
-            else if (scale_current * 4000 < 1.0)
+            else if (scale_current < 0.01)
             {
                 current_rounder = 3;
             }
-            else if (scale_current * 4000 < 10.0)
+            else if (scale_current < 0.1)
             {
                 current_rounder = 2;
             }
-            else if (scale_current * 4000 < 100.0)
+            else if (scale_current < 1.0)
             {
                 current_rounder = 1;
             }

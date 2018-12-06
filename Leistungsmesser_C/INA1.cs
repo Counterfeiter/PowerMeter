@@ -84,6 +84,13 @@ namespace Leistungsmesser_C
                 i++;
             }
 
+            //if current is to less - display zero line
+            if (zg1.GraphPane.Y2Axis.Scale.Max == zg1.GraphPane.Y2Axis.Scale.Min)
+            {
+                zg1.GraphPane.Y2Axis.Scale.Max = 1 * Math.Pow(10, -pm.current_rounder);
+                zg1.GraphPane.Y2Axis.Scale.Min = -1 * Math.Pow(10, -pm.current_rounder);
+            }
+
             myCurve = zg1.GraphPane.AddCurve("", ppl_u, Color.Green, SymbolType.None);
             myCurve2 = zg1.GraphPane.AddCurve("", ppl_i, Color.Red, SymbolType.None);
 
