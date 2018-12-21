@@ -16,7 +16,6 @@ using System.Security.Cryptography;
 using System.Xml.Serialization;
 using System.Xml;
 using System.Runtime.InteropServices;
-using System.ComponentModel;
 
 namespace Leistungsmesser_C
 {
@@ -69,6 +68,16 @@ namespace Leistungsmesser_C
         private const UInt16 FILTER_DIS = 4;
 
 
+        //protocol bytes
+        private const Byte PM_DATAFRAME = 0xDA;
+        private const Byte PM_SCALEVALUES = 0x5C;
+        private const Byte PM_SENDSCALE = 0x5D;
+        private const Byte PM_HELLO = 0x11;
+        private const Byte PM_START = 0x5A;
+        private const Byte PM_STOP = 0x50;
+        private const Byte PM_BOOTLOADER = 0xB0;
+
+
         public PowerMeter(MDIParent1 mdip, HidDevice dev)
         {
             init(mdip, dev);
@@ -99,11 +108,11 @@ namespace Leistungsmesser_C
 
             if (_device == null)
             {
-                mdiparent.debug_form.Recived.Text += "Device null!" + "\r\n";
+                Console.WriteLine("Device null!");
                 return;
             }
 
-            mdiparent.debug_form.Recived.Text += "Try to connect" + "\r\n";
+            Console.WriteLine("Try to connect");
 
             HidFastReadEnumerator enumerator = new HidFastReadEnumerator();
             readDevice = (HidFastReadDevice)enumerator.GetDevice(dev.DevicePath);
@@ -698,7 +707,7 @@ namespace Leistungsmesser_C
                 {
                     String timeStamp = DateTime.Now.ToString("mm:ss.ffff: ");
 
-                    mdiparent.debug_form.Recived.Text += timeStamp + paketzaehler.ToString() +  "\r\n";
+                    Console.WriteLine(timeStamp + paketzaehler.ToString());
 
                 }
 
@@ -770,19 +779,12 @@ namespace Leistungsmesser_C
         /// </summary>
         enum tpm2 : int { IDLE, STARTB, STARTB2, STARTB3, STARTB4, STARTB5, STARTB6, ENDB };			//tpm2 states
 
-        private Byte TPM2_BLOCK_START       = 0xC9;
-        private Byte TPM2_BLOCK_DATAFRAME   = 0xDA;
-        private Byte TPM2_BLOCK_END         = 0x36;
+        //framing bytes
+        private const Byte TPM2_BLOCK_START       = 0xC9;
+        private const Byte TPM2_BLOCK_DATAFRAME   = 0xDA;
+        private const Byte TPM2_BLOCK_END         = 0x36;
 
-        private Byte PM_DATAFRAME       = 0xDA;
-        private Byte PM_SCALEVALUES     = 0x5C;
-        private Byte PM_SENDSCALE       = 0x5D;
-        private Byte PM_HELLO           = 0x11;
-        private Byte PM_START           = 0x5A;
-        private Byte PM_STOP            = 0x50;
-        private Byte PM_BOOTLOADER      = 0xB0;
-
-        private Byte TPM2_ACK = 0xAC;
+        private const Byte TPM2_ACK           = 0xAC;
 
         private int tpm2state = (int)tpm2.IDLE;
         private int framesize = 0;

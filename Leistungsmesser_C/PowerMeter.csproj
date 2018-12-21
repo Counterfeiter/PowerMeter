@@ -79,23 +79,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CalcStrom.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CalcStrom.Designer.cs">
-      <DependentUpon>CalcStrom.cs</DependentUpon>
-    </Compile>
     <Compile Include="Info_Display.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Info_Display.Designer.cs">
       <DependentUpon>Info_Display.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Debug.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Debug.Designer.cs">
-      <DependentUpon>Debug.cs</DependentUpon>
     </Compile>
     <Compile Include="INA1.cs">
       <SubType>Form</SubType>
@@ -118,16 +106,8 @@
     <Compile Include="PowerMeter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="CalcStrom.resx">
-      <DependentUpon>CalcStrom.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Info_Display.resx">
       <DependentUpon>Info_Display.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Debug.resx">
-      <DependentUpon>Debug.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="INA1.resx">
@@ -147,8 +127,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Stromscale.resx">
-      <DependentUpon>Stromscale.cs</DependentUpon>
+    <EmbeddedResource Include="ScaleValues.resx">
+      <DependentUpon>ScaleValues.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
@@ -168,11 +148,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Stromscale.cs">
+    <Compile Include="ScaleValues.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Stromscale.Designer.cs">
-      <DependentUpon>Stromscale.cs</DependentUpon>
+    <Compile Include="ScaleValues.Designer.cs">
+      <DependentUpon>ScaleValues.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

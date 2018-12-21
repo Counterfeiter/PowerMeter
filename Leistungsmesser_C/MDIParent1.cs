@@ -18,15 +18,13 @@ namespace Leistungsmesser_C
 
         private HidDevice[] _deviceList;
 
-        public Debug_Form debug_form;
-
         private Stromscale stromscale;
 
         private Info_Display info_box;
 
         List<PowerMeter> powermeter = new List<PowerMeter>();
 
-        public static String SoftwareVersion = "v1.6.1";
+        public static String SoftwareVersion = "v1.6.2";
 
         static String Banner_Window_Text = "Power Meter " + SoftwareVersion;
 
@@ -184,8 +182,6 @@ namespace Leistungsmesser_C
         private void MDIParent1_Load(object sender, EventArgs e)
         {
             this.Text = Banner_Window_Text;
-            debug_form = new Debug_Form();
-            //debug_form.Show(); //enable for debug output
 
             gui_state = (int)gui_states.UNREADY;
         }
@@ -221,9 +217,12 @@ namespace Leistungsmesser_C
                         PlayStripButton.Enabled = false;
                         StopStripButton.Enabled = false;
                         RecordStripButton.Enabled = false;
+                        //start menu
+                        startToolStripMenuItem.Enabled = false;
                         watchingToolStripMenuItem.Enabled = false;
+                        stopToolStripMenuItem.Enabled = false;
                         recodingToolStripMenuItem.Enabled = false;
-
+                        
                         ScaleMenu.Enabled = false;
 
                         softwareUpdateToolStripMenuItem.Enabled = false;
@@ -264,7 +263,11 @@ namespace Leistungsmesser_C
                             PlayStripButton.Enabled = true;
                             StopStripButton.Enabled = true;
                             RecordStripButton.Enabled = true;
+
+                            //start menu
+                            startToolStripMenuItem.Enabled = true;
                             watchingToolStripMenuItem.Enabled = true;
+                            stopToolStripMenuItem.Enabled = true;
                             recodingToolStripMenuItem.Enabled = true;
 
                             ScaleMenu.Enabled = true;
@@ -306,6 +309,15 @@ namespace Leistungsmesser_C
                         PlayStripButton.Enabled = true;
                         StopStripButton.Enabled = true;
                         RecordStripButton.Enabled = true;
+
+                        //start menu
+                        startToolStripMenuItem.Enabled = true;
+                        watchingToolStripMenuItem.Enabled = true;
+                        stopToolStripMenuItem.Enabled = true;
+                        recodingToolStripMenuItem.Enabled = true;
+
+
+                        startToolStripMenuItem.Enabled = true;
                         watchingToolStripMenuItem.Enabled = true;
                         recodingToolStripMenuItem.Enabled = true;
 
@@ -356,7 +368,11 @@ namespace Leistungsmesser_C
                         PlayStripButton.Enabled = false;
                         StopStripButton.Enabled = true;
                         RecordStripButton.Enabled = true;
+
+                        //start menu
+                        startToolStripMenuItem.Enabled = true;
                         watchingToolStripMenuItem.Enabled = false;
+                        stopToolStripMenuItem.Enabled = true;
                         recodingToolStripMenuItem.Enabled = true;
 
                         ScaleMenu.Enabled = false;
@@ -442,7 +458,11 @@ namespace Leistungsmesser_C
                         PlayStripButton.Enabled = false;
                         StopStripButton.Enabled = true;
                         RecordStripButton.Enabled = false;
+
+                        //start menu
+                        startToolStripMenuItem.Enabled = true;
                         watchingToolStripMenuItem.Enabled = false;
+                        stopToolStripMenuItem.Enabled = true;
                         recodingToolStripMenuItem.Enabled = false;
 
                         ScaleMenu.Enabled = false;
@@ -754,7 +774,7 @@ namespace Leistungsmesser_C
             {
                 if (powermeter[i].State == (int)PowerMeter.pm_states.DISCONNECTED)
                 {
-                    debug_form.Recived.Text += "delete a unconnected device" + "\r\n";
+                    Console.WriteLine("delete a unconnected device");
                     powermeter.RemoveAt(i);
                 } else if(powermeter[i].Ready_for_Action())
                 {
@@ -791,7 +811,7 @@ namespace Leistungsmesser_C
 
                         powermeter.Add(temp);
 
-                        debug_form.Recived.Text += "add a new device" + "\r\n";
+                        Console.WriteLine("add a new device");
                     }
                 }
 
@@ -801,12 +821,12 @@ namespace Leistungsmesser_C
 
         private void DeviceAttachedHandler()
         {
-            debug_form.Recived.Text += "Device attached.\r\n";
+            Console.WriteLine("Device attached.");
         }
 
         private void DeviceRemovedHandler()
         {
-            debug_form.Recived.Text += "Device removed.\r\n";
+            Console.WriteLine("Device removed.");
 
         }
 
